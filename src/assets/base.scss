@@ -21,3 +21,17 @@ img{max-width: 100%;}
 .ml10{margin-left: 10px;}
 table{border-collapse:collapse;border-spacing:0;}
 button{outline: none;}
+input:disabled{
+  cursor: url("//p2.lefile.cn/fes/cms/2020/06/22/udytdmcczax66meyl082tuenspiyrc099786.png"), auto;
+}
+button{
+  -webkit-appearance: button;
+}
+:after, :before {
+  text-decoration: inherit;
+  vertical-align: inherit;
+}
+*, :after, :before {
+  background-repeat: no-repeat;
+  box-sizing: inherit;
+}

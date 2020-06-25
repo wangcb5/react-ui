@@ -1,51 +1,140 @@
 import React from 'react'
-import { LeInput } from "./out"
+import {
+    LeInput,
+    LeButton,
+    LeCheckbox,
+    LeRadio,
+    LeSelect
+} from "./out"
 
  export default class App extends React.Component {
     constructor(props) {
         super(props);
+        this.checkboxRef = React.createRef();
+        this.radioRef = React.createRef();
         this.state = {
-            value: '',
-            value1: ''
+            value: '123',
+            value1: '',
+            data: [
+                {
+                    name: '测试1',
+                    code: 1
+                },
+                {
+                    name: '测试2',
+                    code: 2
+                }
+            ]
+        };
+    }
+    componentDidMount() {
+        console.log(this.checkboxRef.current.getCheckedItems());
+        console.log(this.radioRef.current.getCheckedItems());
+        this.checkboxRef.current.setCheckedItems([{
+            name: '测试1',
+            code: '1'
         }
+        ]);
+        this.radioRef.current.setCheckedItems({
+            name: '测试1',
+            code: '1'
+        });
+        console.log(this.checkboxRef.current.getItemByField({
+            name: '测试1',
+            code: ''
+        }))
     }
 
-    changeHandler(event) {
+     /*********  input start ***********/
+    changeHandler=(event)=> {
+        let name = event.target.name;
         this.setState({
-            value:  event.target.value || ''
+            [name]:  event.target.value || ''
         })
     }
+     /*********  input end ***********/
 
-     changeHandler1(event) {
-         this.setState({
-             value1:  event.target.value || ''
-         })
-     }
-
-     buttonClick() {
+    /*********  button start ***********/
+    buttonClickHandler=()=>{
         console.log(this.state.value)
-     }
+    }
+    buttonSubmitHandler=()=> {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(111)
+            },1000)
+        })
+    }
+     /*********  button end ***********/
 
     render() {
         return (
             <div>
+                input组件:
+                <br />
                 <LeInput
                     label='测试'
                     value={this.state.value}
-                    onChange={this.changeHandler.bind(this)}
+                    name="value"
+                    onChange={this.changeHandler}
                     placeholder='23414234'
                     tips={'1112314'}
                     errorMsg={'14235'}
+                    style={{'width': 200}}
                 />
                 <LeInput
-                    label='测试22222'
+                    label='测试2'
                     value={this.state.value1}
-                    onChange={this.changeHandler1.bind(this)}
+                    name="value1"
+                    onChange={this.changeHandler}
                     placeholder='23414234'
                     tips={'1112314'}
                     errorMsg={'14235'}
                 />
-                <input type="button" onClick={this.buttonClick.bind(this)}/>
+                button组件：
+                <div>
+                    <LeButton
+                            type="default"
+                            tag='button'
+                            value='button'
+                            disabled={false}
+                            onClick={this.buttonClickHandler}
+                            onSubmit={this.buttonSubmitHandler}
+                            iconName={'fa-align-justify'}
+                            style={{marginRight: 10}}
+                    />
+                    <LeButton
+                        type="default"
+                        tag='submit'
+                        value='submit'
+                        disabled={false}
+                        onClick={this.buttonClickHandler}
+                        onSubmit={this.buttonSubmitHandler}
+                        iconName={'fa-align-justify'}
+                    />
+                </div>
+                <br />
+                checkbox组件：
+                <LeCheckbox
+                    data={this.state.data}
+                    disabled={false}
+                    displayName={'name'}
+                    displayValue={'code'}
+                    ref={this.checkboxRef}
+                />
+                <br/>
+                radio组件：
+                <LeRadio
+                    name={'radio'}
+                    data={this.state.data}
+                    disabled={false}
+                    displayName={'name'}
+                    displayValue={'code'}
+                    ref={this.radioRef}
+                />
+                <br/>
+                select组件：
+                <LeSelect/>
             </div>
         );
     }

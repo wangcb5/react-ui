@@ -1,2 +1,7 @@
 import '@core/base.scss'
+import '@core/font-awesome-4.7.0/css/font-awesome.css'
 export {default as LeInput} from '@comp/input'
+export {default as LeButton} from '@comp/button'
+export {default as LeCheckbox} from '@comp/checkbox'
+export {default as LeRadio} from '@comp/radio'
+export {default as LeSelect} from '@comp/select'

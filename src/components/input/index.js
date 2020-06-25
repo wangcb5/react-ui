@@ -11,10 +11,11 @@ export default class LeInput extends React.Component{
 
         this.state= {
             cls: '',
-            focus:false
+            focus: this.props.value? true: false
         };
     }
 
+    /************ event start ***************/
     focusHandler(event){
         if (!this.props.value){
             this.setState({
@@ -41,6 +42,10 @@ export default class LeInput extends React.Component{
         this.props.onKeyPress &&  this.props.onKeyPress(event)
     }
 
+    /************ event end ***************/
+
+
+    /************ methods start ***************/
     init() {
 
     }
@@ -50,16 +55,36 @@ export default class LeInput extends React.Component{
         this.setState({
             focus: false
         });
-        this.props.onChange &&  this.props.onChange(event);
+        this.changeHandler({target: document.getElementById('input_' + this._idSeed)})
     }
 
+    showClearHandler() {
+        if ( !this.state.focus) {
+            return ''
+        } else {
+            return <i onClick={(e) => this.clear(e)} className='input_icon_close'></i>
+        }
+    }
+    /************ methods end ***************/
+
+
+    /************ 生命周期 start ***************/
     componentDidMount() {
         this.init()
     }
 
+    shouldComponentUpdate(nextProps,nextState){
+        if (this.state.focus == nextState.focus && this.props.value == nextProps.value) {
+            return  false
+        } else {
+            return true
+        }
+    }
+    /************ 生命周期 end ***************/
+
 
     render() {
-        const {disabled, label, value,tips, errorMsg} = this.props;
+        const {disabled, label, value,tips, errorMsg,name, style} = this.props;
         let type = this.props.type;
         let placeholder = this.props.placeholder;
         if (type != 'text' && type != 'password') {
@@ -70,7 +95,7 @@ export default class LeInput extends React.Component{
         }
 
         return (
-            <div className={`input_group ${this.state.focus?"focus":""}`}>
+            <div className={`input_group ${this.state.focus?"focus":""} ${this.props.value}`} style={style}>
                 <div className="input_control">
                     <div className="input_slot">
                         <div className="text_field">
@@ -81,6 +106,7 @@ export default class LeInput extends React.Component{
                                 value={value}
                                 type={type}
                                 placeholder={placeholder}
+                                name={name}
                                 onChange={(e) => this.changeHandler(e)}
                                 onFocus={(e) => this.focusHandler(e)}
                                 onBlur={(e) => this.blurHandler(e)}
@@ -88,18 +114,17 @@ export default class LeInput extends React.Component{
                                 ref={this.inputRef}
                             />
                             {
-                                !this.state.focus || !this.inputRef.current.value ? '' :
-                                <i onClick={(e) => this.clear(e)} className='input_icon_close'></i>
+                                this.showClearHandler()
                             }
                         </div>
                     </div>
                     <div className="input_detail">
-                        <div className="input_detail_tips">
-                            {tips}
-                        </div>
-                        <div className="input_detail_errorMsg">
-                            {errorMsg}
-                        </div>
+                        {/*<div className="input_detail_tips">*/}
+                        {/*    {tips}*/}
+                        {/*</div>*/}
+                        {/*<div className="input_detail_errorMsg">*/}
+                        {/*    {errorMsg}*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>
@@ -109,7 +134,13 @@ export default class LeInput extends React.Component{
 
 LeInput.defaultProps = {
     disabled: false,
-    type: 'text'
+    type: 'text',
+    label: '',
+    tips: '',
+    errorMsg: '',
+    placeholder: '',
+    name: '',
+    style: {}
 };
 
 LeInput.propTypes = {
@@ -120,6 +151,8 @@ LeInput.propTypes = {
     placeholder: PropTypes.string,
     type: PropTypes.string,
     onChange: PropTypes.func,
-    onkeypress: PropTypes.func
+    onkeypress: PropTypes.func,
+    name: PropTypes.string,
+    style: PropTypes.object
 };
 
