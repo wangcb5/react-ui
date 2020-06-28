@@ -96,22 +96,24 @@ class LeRadio extends Component{
     /*********  event end   *************/
 
     render() {
-        const {displayName, displayValue, name} = this.props;
+        const {displayName, displayValue, name, disabled} = this.props;
         let html = this.state.data.map((item, index) => {
             return (
                 <li key={index} className='le_radio_item'>
                     <div className={'le_radio_item_icon'}>
                         <i
-                            className={`fa ${item._ck ? 'fa-check-circle' : 'fa-circle-o'}`}
+                            className={`fa ${item._ck ? 'fa-check-circle' : disabled? 'fa-ban' : 'fa-circle-o'}`}
                             aria-hidden="true"
                             style={{
-                                color: '#1867c0',
+                                color: disabled ? '' : '#1867c0',
                                 fontSize: 20,
                             }}
                         ></i>
                         <input type="radio"
+                               style={{cursor: disabled? 'auto' : 'pointer'}}
                                id={item._id}
                                value={item[displayValue]}
+                               disabled={disabled}
                                checked={item._ck}
                                name={name}
                                onChange={ (e) => this.onChange(e, index)}

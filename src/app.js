@@ -12,6 +12,7 @@ import {
         super(props);
         this.checkboxRef = React.createRef();
         this.radioRef = React.createRef();
+        this.selectRef = React.createRef();
         this.state = {
             value: '123',
             value1: '',
@@ -23,13 +24,23 @@ import {
                 {
                     name: '测试2',
                     code: 2
-                }
+                },
+                {
+                    name: '测试3',
+                    code: 3
+                },
+                {
+                    name: '测试4',
+                    code: 4
+                },
+                {
+                    name: '测试5',
+                    code: 5
+                },
             ]
         };
     }
     componentDidMount() {
-        console.log(this.checkboxRef.current.getCheckedItems());
-        console.log(this.radioRef.current.getCheckedItems());
         this.checkboxRef.current.setCheckedItems([{
             name: '测试1',
             code: '1'
@@ -39,10 +50,10 @@ import {
             name: '测试1',
             code: '1'
         });
-        console.log(this.checkboxRef.current.getItemByField({
+        this.selectRef.current.setValue({
             name: '测试1',
-            code: ''
-        }))
+            code: '1'
+        })
     }
 
      /*********  input start ***********/
@@ -127,14 +138,25 @@ import {
                 <LeRadio
                     name={'radio'}
                     data={this.state.data}
-                    disabled={false}
+                    disabled={true}
                     displayName={'name'}
                     displayValue={'code'}
                     ref={this.radioRef}
                 />
                 <br/>
                 select组件：
-                <LeSelect/>
+                <br/>
+                <div style={{width: 300}}>
+                    <LeSelect
+                        data={this.state.data}
+                        displayName={'name'}
+                        displayValue={'code'}
+                        disabled={false}
+                        ref={this.selectRef}
+                        label={'测试啊'}
+                        multiple={true}
+                    />
+                </div>
             </div>
         );
     }

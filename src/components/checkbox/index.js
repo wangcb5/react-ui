@@ -82,23 +82,25 @@ class LeCheckbox extends React.Component{
     /*********  event end   *************/
 
     render() {
-        const {displayName, displayValue} = this.props;
+        const {displayName, displayValue, disabled} = this.props;
         let html = this.state.data.map((item, index) => {
             return (
                 <li key={index} className='le_checkbox_item'>
                     <div className={'le_checkbox_item_icon'}>
                         <i
-                            className={`fa ${item._ck ? 'fa-check-square' : 'fa-square-o'}`}
+                            className={`fa ${item._ck ? 'fa-check-square' : disabled? 'fa-ban' :'fa-square-o'}`}
                             aria-hidden="true"
                             style={{
-                               color: '#1867c0',
+                               color: disabled ? '' :'#1867c0',
                                 fontSize: item._ck ? 20 : 22,
                             }}
                         ></i>
                         <input type="checkbox"
                                id={item._id}
+                               style={{cursor: disabled ?'auto' : 'pointer'}}
                                value={item[displayValue]}
                                checked={item._ck}
+                               disabled={disabled}
                                onChange={ (e) => this.onChange(e, index)}
                         />
                     </div>
