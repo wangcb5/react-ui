@@ -61,7 +61,7 @@ class LeButton extends Component{
     /************  event start  ***************/
     onClick=(e)=>{
         this.ripplesHandler(e);
-        if (this.props.tag != 'button') {
+        if (this.props.tag == 'submit') {
             this.onSubmit()
         } else {
             this.props.onClick && this.props.onClick()

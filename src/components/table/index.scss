@@ -1,0 +1,115 @@
+.le_table{
+  border-spacing: 0;
+  line-height: 1.5;
+  color: rgba(0,0,0,.87);
+  width: 100%;
+  .le_table_header_item_btnList{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    >div{
+      margin-right: 20px;
+    }
+  }
+  .le_table_header_item_checkbox,.le_table_body_item_checkbox{
+    font-size: 20px;
+    color: rgba(0,0,0,.87) !important;
+    i{
+      cursor: pointer;
+      color: grey;
+    }
+    i.checked{
+      font-size: 18px;
+    }
+  }
+  .le_table_header_item_checkbox.disabled,.le_table_body_item_checkbox.disabled{
+    cursor: auto !important;
+  }
+  .le_table_header>tr>th,.le_table_body>tr>td {
+    border-bottom: thin solid rgba(0,0,0,.12);
+    color: rgba(0,0,0,.6);
+    user-select: none;
+    font-size: 14px;
+    height: 48px;
+    padding: 0 16px;
+    transition: height .2s cubic-bezier(.4,0,.6,1);
+    text-align: start;
+  }
+  .le_table_body>tr>td{
+    color: rgba(0,0,0,.87) !important;
+    font-size: 16px !important;
+  }
+  .le_table_body{
+    tr{
+      .le_table_body_item_btn{
+        display: flex;
+        >div{
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+.le_table_footer{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 14px;
+  padding: 0 8px;
+  border-top: thin solid rgba(0,0,0,.12);
+  .le_table_footer_select{
+    margin-right: 14px;
+    display: flex;
+    align-items: center;
+    flex: 0 0 0;
+    justify-content: flex-end;
+    white-space: nowrap;
+    .le_table_footer_select_content{
+      margin: 13px 0 13px 34px;
+      flex: 0 1 0;
+      padding: 0;
+      position: static;
+      color: rgba(0,0,0,.87);
+      align-items: flex-start;
+      display: flex;
+      font-size: 16px;
+      letter-spacing: normal;
+      max-width: 100%;
+      text-align: left;
+    }
+  }
+  .le_table_footer_pagination{
+    margin: 0 32px 0 24px;
+    display: block;
+    text-align: center;
+  }
+  .le_table_footer_icon_before{
+    margin-right: 7px;
+  }
+  .le_table_footer_icon_before,.le_table_footer_icon_after{
+    color: rgba(0,0,0,.26);
+    height: 36px;
+    width: 36px;
+    align-items: center;
+    border-radius: 4px;
+    display: flex;
+    font-weight: 500;
+    letter-spacing: .0892857143em;
+    justify-content: center;
+    position: relative;
+    vertical-align: middle;
+    white-space: nowrap;
+    i{
+      height: 24px;
+      font-size: 24px;
+      width: 24px;
+      cursor:pointer;
+      color: #333333;
+    }
+    i.disabled{
+      cursor:auto;
+      color: #9498a4;
+    }
+  }
+}

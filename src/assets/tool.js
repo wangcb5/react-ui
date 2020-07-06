@@ -1,3 +1,20 @@
+let EventPublisher = function(){
+
+    this.eventCallbackDictionary = {};
+
+    this.on = function(eventName,callback){
+        this.eventCallbackDictionary[eventName] = callback;
+    }
+
+    this.broadcast = function(eventName,data){
+        for(let i in this.eventCallbackDictionary){
+            if(i == eventName && this.eventCallbackDictionary[eventName]){
+                this.eventCallbackDictionary[eventName](data);
+            }
+        }
+    }
+}
+
 let CommonUtil = {
     throwError: function (str) {
         console.log(str);
@@ -139,76 +156,7 @@ let CommonUtil = {
                 }, delay);
             }
         },
-        addPrimaryAndCk(data, ck) {
-            data.map(item => {
-                if (ck != undefined) {
-                    if (!ck) {
-                        item.ck = false;
-                    } else {
-                        item.ck = true;
-                    }
-                } else {
-                    item.ck = false;
-                }
-                item.cls = "";
-                item.__tmpId = tool._idSeed.newId();
-            });
-            return data;
-        },
-        getCheckedItems(arr, field) {
-            let res = {
-                items: [],
-                vals: []
-            };
-            arr.map(item => {
-                if (item.ck) {
-                    res.items.push(item);
-                    if (field) {
-                        res.vals.push(item[field]);
-                    }
-                }
-            })
-            return res;
-        },
-        getInfoInArrayByField(field, vals, array) {
-            let res = [];
-            vals.map(item => {
-                array.map(k => {
-                    if (k[vals] == item) {
-                        res.push(k);
-                    }
-                })
-            })
-            return res;
-        }
-    },
-    cookie: {
-        removeCookie(name) {
-            this.setCookie(name, "", new Date(0));
-        },
-        getCookie(name) {
-            let cookie = document.cookie;
-            let cookieName = encodeURIComponent(name) + "=",
-                cookieStart = cookie.indexOf(cookieName),
-                cookieValue = null;
-            if (cookieStart > -1) {
-                let cookieEnd = cookie.indexOf(';', cookieStart);
-                if (cookieEnd == -1) {
-                    cookieEnd = cookie.length;
-                }
-                cookieValue = decodeURIComponent(cookie.substring(cookieStart + cookieName.length, cookieEnd));
-            }
-            return cookieValue;
-        },
-        setCookie(name, value, expires) {
-            let cookieText = encodeURIComponent(name) + "=" + encodeURIComponent(value);
-            if (expires instanceof Date) {
-                cookieText += "; expires=" + expires.toGMTString();
-            } else {
-                cookieText += "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
-            }
-            document.cookie = cookieText + ";path=/;domain=" + document.domain;
-        },
+        
     },
     arrayServer: {
         _private: {
@@ -455,11 +403,33 @@ let CommonUtil = {
             return res;
         }
     },
-    _idSeed: {
-        id: 10000,
-        newId: () => {
-            return CommonUtil._idSeed.id++;
-        }
+    cookie: {
+        removeCookie(name) {
+            this.setCookie(name, "", new Date(0));
+        },
+        getCookie(name) {
+            let cookie = document.cookie;
+            let cookieName = encodeURIComponent(name) + "=",
+                cookieStart = cookie.indexOf(cookieName),
+                cookieValue = null;
+            if (cookieStart > -1) {
+                let cookieEnd = cookie.indexOf(';', cookieStart);
+                if (cookieEnd == -1) {
+                    cookieEnd = cookie.length;
+                }
+                cookieValue = decodeURIComponent(cookie.substring(cookieStart + cookieName.length, cookieEnd));
+            }
+            return cookieValue;
+        },
+        setCookie(name, value, expires) {
+            let cookieText = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            if (expires instanceof Date) {
+                cookieText += "; expires=" + expires.toGMTString();
+            } else {
+                cookieText += "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            }
+            document.cookie = cookieText + ";path=/;domain=" + document.domain;
+        },
     },
     url:{
         getUrlParam(name) {
@@ -473,6 +443,74 @@ let CommonUtil = {
             let r = window.location.search.substr(1).match(reg);
             if (r != null) return decodeURI(r[2]);
             return "";
+        }
+    },
+    _idSeed: {
+        id: 10000,
+        newId: () => {
+            return CommonUtil._idSeed.id++;
+        }
+    },
+    _event_publisher:new EventPublisher(),
+    comp:{
+        cloneObj(source) {
+            if (source) {
+                return JSON.parse(JSON.stringify(source));
+            }
+            return null;
+        },
+        addPrimaryAndCk(data, ck) {
+            data.map((item,index) => {
+                if (ck != undefined) {
+                    if (!ck) {
+                        item._ck = false;
+                    } else {
+                        item._ck = true;
+                    }
+                } else {
+                    item._ck = false;
+                }
+                item._cls = "";
+                item._index = index;
+                item._tmpId = CommonUtil._idSeed.newId();
+            });
+            return data;
+        },
+        getCheckedItems(arr, field) {
+            let res = {
+                items: [],
+                vals: []
+            };
+            arr.map(item => {
+                if (item._ck) {
+                    res.items.push(item);
+                    if (field) {
+                        res.vals.push(item[field]);
+                    }
+                }
+            })
+            return res;
+        },
+        getItemByField(arr,field,value){
+           let res = null;
+           arr.forEach(x=>{
+               if(x[field] == value){
+                   res = x;
+               }
+           }) 
+           return res;
+        },
+        checkIsArray(data){
+            if(!data || data instanceof Array == false){
+                return false;
+            }
+            return true;
+        },
+        checkArrayNull(data){
+            if(this.checkIsArray(data) && data.length > 0){
+                return false;
+            }
+            return true;
         }
     }
 }

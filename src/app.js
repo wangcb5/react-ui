@@ -4,8 +4,12 @@ import {
     LeButton,
     LeCheckbox,
     LeRadio,
-    LeSelect
+    LeSelect,
+    AutoCompleted,
+    LeTable
 } from "./out"
+import proxy from "@core/proxy";
+import tool from '@core/tool'
 
  export default class App extends React.Component {
     constructor(props) {
@@ -13,6 +17,8 @@ import {
         this.checkboxRef = React.createRef();
         this.radioRef = React.createRef();
         this.selectRef = React.createRef();
+        this.selectRef1 = React.createRef();
+        this.tableRef = React.createRef();
         this.state = {
             value: '123',
             value1: '',
@@ -77,6 +83,24 @@ import {
         })
     }
      /*********  button end ***********/
+
+     autoCompletedHandler=(data)=>{
+         console.log(data);
+         return data
+     }
+     getCheckedItem=()=>{
+         let item = this.tableRef.current.getCheckedItem();
+         console.log(item)
+
+     }
+
+     formatTime(item,row){
+         // time转换
+         return tool.date.dateTime(row[item.key]);
+     }
+     infoBtn(row){
+         console.log(row)
+     }
 
     render() {
         return (
@@ -153,10 +177,78 @@ import {
                         displayValue={'code'}
                         disabled={false}
                         ref={this.selectRef}
-                        label={'测试啊'}
+                        label={'测试啊1'}
                         multiple={true}
+                        clear={true}
+                    />
+                    <LeSelect
+                        data={this.state.data}
+                        displayName={'name'}
+                        displayValue={'code'}
+                        disabled={false}
+                        ref={this.selectRef1}
+                        label={'测试啊2'}
+                        multiple={false}
                     />
                 </div>
+                AutoCompleted:
+                <AutoCompleted
+                    displayName={'word'}
+                    displayValue={'appId'}
+                    disabled={false}
+                    label={'测试'}
+                    url={'/auto/suggest?keyword='}
+                    multiple={false}
+                    analysis={this.autoCompletedHandler}
+                />
+                <br/>
+                table:
+                <LeButton
+                    value='获取选中项'
+                    onClick={this.getCheckedItem}
+                />
+                <LeTable
+                    ref={this.tableRef}
+                    options={{
+                        showCk:true,
+                        // singleSelected: true,
+                        map:[
+                            {key:"materialNumber",val:"<#物料编码#>"},
+                            {key:"messageID",val:"<#消息ID#>"},
+                            {key:"message",val:"<#消息内容#>"},
+                            {key:"updateTime",val:"<#更新时间#>", convert:this.formatTime}
+                        ],
+                        getUrl:() => {
+                            return proxy.proxyUrl + "/index/queryList/179?materialNumber="
+                        },
+                        pageOption:{
+                            sizeKey:"pageSize",
+                            indexKey:"currentPage",
+                            countKey: 'totalPage',
+                            lengthKey: 'totalNum',
+                            index:1,
+                            size:10
+                        },
+                        actions:[
+                            {
+                                key:"btn",
+                                val:"<#按钮#>",
+                                action:this.infoBtn
+                            }
+                        ],
+                        analysis:(data)=>{
+                            if(data && data.data && data.data.data){
+                                return {
+                                    data: data.data
+                                }
+                            }else{
+                                return {
+                                    data:[]
+                                }
+                            }
+                        }
+                    }}
+                />
             </div>
         );
     }

@@ -11,9 +11,10 @@ class LeSelect extends Component{
         label: PropTypes.string,
         multiple: PropTypes.bool,
         change: PropTypes.func,
-        clear: PropTypes.func,
+        clear: PropTypes.bool,
         data: PropTypes.array,
-        disabled: PropTypes.bool
+        disabled: PropTypes.bool,
+        filter: PropTypes.bool
     };
     static defaultProps = {
         placeholder: '请选择',
@@ -22,19 +23,23 @@ class LeSelect extends Component{
         label: '',
         multiple: false,
         data: [],
-        disabled: false
+        disabled: false,
+        clear: false,
+        filter: false
     };
     constructor(props) {
         super(props);
         this._idSeed = tool._idSeed.newId();
+        this.inputRef = React.createRef();
         this.state = {
             active: false,
             have: false,
             show: false,
             mouseOver: false,
             selectData: [],
-            data: props.data,
-            disabled: props.disabled
+            filterData: props.data,
+            disabled: props.disabled,
+            value: ''
         }
     }
 
@@ -45,11 +50,18 @@ class LeSelect extends Component{
     componentWillUnmount() {
         document.body.removeEventListener('click', this.bodyClick);
     }
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            filterData: nextProps.data
+        })
+    }
+
 
     // shouldComponentUpdate(nextProps,nextState){
-    //     if (this.state.active == nextState.active && this.state.have == nextState.have) {
+    //     const {active, have, show, mouseOver, disabled} = this.state;
+    //     if (active == nextState.active && have == nextState.have && show == nextState.show && mouseOver == nextState.mouseOver && nextState.disabled == disabled) {
     //         return  false
-    //     } else {
+    //     }else {
     //         return true
     //     }
     // }
@@ -63,7 +75,7 @@ class LeSelect extends Component{
         const {have, active, show} = this.state;
         const {displayName} = this.props;
         if (!active && !have && !show || this.state.disabled) return;
-        if (this.state.selectData.length > 0) {
+        if (this.state.selectData.length > 0 || this.state.value) {
             this.setState({
                 have: false,
                 show: false
@@ -80,7 +92,7 @@ class LeSelect extends Component{
     getSelectIconBox=()=> {
         const {show, have} = this.state;
         return (
-            <div className='le_select_icon' onClick={this.onClick}>
+            <div className='le_select_icon' onClick={this.inputOnClick}>
                 <i className={`fa fa-chevron-down ${show ? 'active' : ''} ${have ? 'have' : ''}`} aria-hidden="true"></i>
             </div>
         )
@@ -116,20 +128,44 @@ class LeSelect extends Component{
         } else {
             arr.push(obj)
         }
+        if (!this.props.multiple) {
+            let newArr = [];
+            newArr.push(arr[0]);
+            arr = newArr;
+        }
         this.setState({
             selectData: arr,
-            active: true
+            active: true,
+            value: arr.length && this.props.multiple ? '' : arr[0][this.props.displayName]
         })
     };
     getValue=()=>{
         return this.state.selectData
     };
 
+    filterValue=()=> {
+        const {displayName, multiple, filter,data} = this.props;
+        const {value, selectData } = this.state;
+        if (!filter)return
+        let arr = tool.object.cloneObj(data);
+        arr = arr.filter(item => {
+            if (multiple) {
+                return (item[displayName]+ '').indexOf(value) != -1
+            } else {
+                return (item[displayName]+ '').indexOf(value + '') != -1
+            }
+        });
+        this.setState({
+            filterData: arr
+        })
+    }
+
     clear=()=>{
         this.setState({
             selectData: [],
             have: false,
-            active: false
+            active: false,
+            value: ''
         })
     };
 
@@ -140,9 +176,9 @@ class LeSelect extends Component{
     /***********  event start *************/
     onMouseOver=(e)=> {
         const {displayName} = this.props;
-        const {disabled} = this.state;
+        const {disabled, value} = this.state;
         if (disabled)return;
-        if (this.state.mouseOver == false && this.state.selectData.length > 0) {
+        if (this.state.mouseOver == false && (this.state.selectData.length > 0 || value)) {
             this.setState({
                 mouseOver: true
             })
@@ -158,28 +194,43 @@ class LeSelect extends Component{
         }
     };
     inputOnClick=(e)=> {
-        if (!this.state.data || this.state.data.length < 1 || this.state.disabled) {
+        if (!this.props.data || this.props.data.length < 1 || this.state.disabled) {
             return
         }
             this.setState({
                 active: true,
                 have: true,
                 show: true
+            }, ()=> {
+                this.filterValue();
+                if (this.props.data.length) {
+                    this.inputRef.current.focus()
+                }
             })
+    };
+    onChange=(e)=> {
+        this.setState({
+            value: e.target.value
+        }, ()=>{
+            this.filterValue()
+        })
     };
     onClick=(e, item)=> {
         const {disabled} = this.state;
-        const {displayValue, multiple} = this.props;
+        const {displayValue, multiple, displayName} = this.props;
         if (disabled)return;
         if (!multiple) {
             let value = this.state.selectData.length ? this.state.selectData[0][displayValue] : '';
-            if (value == item[displayValue])return;
+            if (item && value == item[displayValue])return;
             this.setState({
                 selectData: [
                     item
                 ],
                 have: true,
-                active: true
+                active: true,
+                value: item[displayName]
+            }, () => {
+                this.props.onChange && this.props.onChange(item[displayValue])
             });
         } else{
             let arr  = tool.object.cloneObj(this.state.selectData);
@@ -206,7 +257,10 @@ class LeSelect extends Component{
                     selectData: arr,
                     have: true,
                     active: true,
-                    show: true
+                    show: true,
+                    value: ''
+                }, () => {
+                    this.props.onChange && this.props.onChange(item[displayValue])
                 });
             } else {
                 this.setState({
@@ -215,7 +269,10 @@ class LeSelect extends Component{
                     ],
                     have: true,
                     active: true,
-                    show: true
+                    show: true,
+                    value: ''
+                }, () => {
+                    this.props.onChange && this.props.onChange(item[displayValue])
                 });
             }
         }
@@ -224,8 +281,8 @@ class LeSelect extends Component{
 
 
     render() {
-        const {active, have, show, mouseOver, data, selectData, disabled} = this.state;
-        const {placeholder, displayName, displayValue, label, multiple} = this.props;
+        const {active, have, show, mouseOver, selectData, disabled, value, filterData} = this.state;
+        const {placeholder, displayName, displayValue, label, multiple, clear, filter, data} = this.props;
         let valueHtml = '';
         let menuHtml = '';
         if (multiple) {
@@ -243,7 +300,7 @@ class LeSelect extends Component{
             >{valueHtml1}</div>
 
             if (selectData.length) {
-                menuHtml = data.map((item, index) => {
+                menuHtml = filterData.map((item, index) => {
                     let bool = false;
                     for (let i = 0 ; i < selectData.length; i++) {
                         if (selectData[i][displayValue] == item[displayValue]) {
@@ -266,7 +323,7 @@ class LeSelect extends Component{
                 });
             } else {
                 let value = selectData.length ? selectData[0][displayValue] : '';
-                menuHtml = data.map((item, index) => {
+                menuHtml = filterData.map((item, index) => {
                     return (
                         <div
                             className={`le_select_menu_item ${value == item[displayValue] ? 'active' : ''}`}
@@ -287,11 +344,11 @@ class LeSelect extends Component{
         } else {
             let value = selectData.length ? selectData[0][displayValue] : '';
             let name = selectData.length ? selectData[0][displayName] : '';
-            valueHtml =  <div
-                className="le_select_selections_text"
-            >{name}</div>;
+            // valueHtml =  <div
+            //     className="le_select_selections_text"
+            // >{name}</div>;
 
-            menuHtml = data.map((item, index) => {
+            menuHtml = filterData.map((item, index) => {
                 return (
                     <div
                         className={`le_select_menu_item ${value == item[displayValue] ? 'active' : ''}`}
@@ -329,12 +386,17 @@ class LeSelect extends Component{
                         <input
                             placeholder={(active && !selectData.length) ?  placeholder : ''}
                             id={'select_' + this._idSeed}
-                            readOnly="readonly"
+                            ref={this.inputRef}
+                            readOnly={data.length && filter ? false : true}
+                            onChange={this.onChange}
                             type="text"
-                            autoComplete="off" />
+                            value={value}
+                            autoComplete="off"
+                        />
                     </div>
-                    {mouseOver ? this.getClearIconBox() : this.getSelectIconBox()}
+                    {mouseOver && clear ? this.getClearIconBox() : this.getSelectIconBox()}
                 </div>
+                <input type="text"/>
                 <div
                     className={`le_select_menu ${show ? 'show' : 'hide'}`}
                 >

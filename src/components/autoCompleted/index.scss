@@ -214,7 +214,7 @@
       .le_select_menu_item:hover:before {
         opacity: .04;
       }
-      .le_select_menu_item:focus:before,.le_select_menu_item.active:before {
+      .le_select_menu_item.active:before {
         opacity: .12;
       }
       .le_select_menu_item.active{
