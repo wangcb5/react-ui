@@ -6,12 +6,14 @@ import {
     LeRadio,
     LeSelect,
     AutoCompleted,
-    LeTable
+    LeTable,
+    LeUpload,
 } from "./out"
 import proxy from "@core/proxy";
 import tool from '@core/tool'
+import topComp from '@comp/topComp.js'
 
- export default class App extends React.Component {
+class App extends React.Component {
     constructor(props) {
         super(props);
         this.checkboxRef = React.createRef();
@@ -101,6 +103,14 @@ import tool from '@core/tool'
      infoBtn(row){
          console.log(row)
      }
+
+     uploadAnalysis(data) {
+         return data.data
+     }
+
+     alertHandler=()=> {
+         this.props.Alert.current.showAlert('123')
+     };
 
     render() {
         return (
@@ -249,7 +259,25 @@ import tool from '@core/tool'
                         }
                     }}
                 />
+                <br />
+                upload:
+                <LeUpload
+                    label={'upload测试'}
+                    analysis={this.uploadAnalysis}
+                    url={'file/img/upload'}
+                    keyname={'file'}
+                    multiple={true}
+                    disabled={false}
+                />
+                <br/>
+                alert:
+                <LeButton
+                    value='alert测试'
+                    onClick={this.alertHandler}
+                />
             </div>
         );
     }
 }
+
+export default topComp(App)

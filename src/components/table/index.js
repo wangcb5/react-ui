@@ -39,7 +39,7 @@ class LeTable extends Component{
         const url = options.getUrl();
         if (!url) return;
         this.renderBool = false;
-        Ajax.getFetch(url + `&${options.pageOption.sizeKey}=${options.pageOption.size}&${options.pageOption.indexKey}=${options.pageOption.index}`, true).then(data=> {
+        Ajax.getFetch(url + `&${options.pageOption.sizeKey}=${options.pageOption.size}&${options.pageOption.indexKey}=${options.pageOption.index}`).then(data=> {
             let result = options.analysis(data).data;
             let resultData = result.data;
             for (let i = 0 ; i < resultData.length; i++) {
